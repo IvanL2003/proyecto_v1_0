@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:proyecto_v1_0/pantalla2.dart';
+import 'package:proyecto_v1_0/pantallaDescrip.dart';
 import 'package:proyecto_v1_0/pantalla3.dart';
 import 'package:proyecto_v1_0/pantalla4.dart';
 import 'package:proyecto_v1_0/pantalla_curso.dart';
@@ -381,78 +381,6 @@ class _PrincipalState extends State<Principal> {
                   itemCount: _articles.length,
                   itemBuilder: (BuildContext context, int index) {
                     final item = _articles[index];
-                    // return Container(
-                    //   height: 136,
-                    //   margin: const EdgeInsets.symmetric(
-                    //     horizontal: 16,
-                    //     vertical: 8.0,
-                    //   ),
-                    //   decoration: BoxDecoration(
-                    //     // color: Colors.teal,
-                    //     border: Border.all(color: Colors.black),
-                    //     borderRadius: BorderRadius.circular(8.0),
-                    //   ),
-                    //   padding: const EdgeInsets.all(8),
-                    //   child: Row(
-                    //     children: [
-                    //       Expanded(
-                    //         child: Column(
-                    //           mainAxisAlignment: MainAxisAlignment.center,
-                    //           crossAxisAlignment: CrossAxisAlignment.start,
-                    //           children: [
-                    //             Text(
-                    //               item.title,
-                    //               style: const TextStyle(
-                    //                 fontWeight: FontWeight.bold,
-                    //               ),
-                    //               maxLines: 2,
-                    //               overflow: TextOverflow.ellipsis,
-                    //             ),
-                    //             const SizedBox(height: 8),
-                    //             Text(
-                    //               "${item.author} · ${item.postedOn}",
-                    //               style: Theme.of(context).textTheme.bodySmall,
-                    //             ),
-                    //             const SizedBox(height: 8),
-                    //             Row(
-                    //               mainAxisSize: MainAxisSize.min,
-                    //               children:
-                    //                   [
-                    //                     Icons.bookmark_border_rounded,
-                    //                     Icons.share,
-                    //                     Icons.more_vert,
-                    //                   ].map((e) {
-                    //                     return InkWell(
-                    //                       onTap: () {},
-                    //                       child: Padding(
-                    //                         padding: const EdgeInsets.only(
-                    //                           right: 8.0,
-                    //                         ),
-                    //                         child: Icon(e, size: 16),
-                    //                       ),
-                    //                     );
-                    //                   }).toList(),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //       Container(
-                    //         width: 100,
-                    //         height: 100,
-                    //         // color: Colors.blue,
-                    //         decoration: BoxDecoration(
-                    //           color: Colors.grey,
-                    //           borderRadius: BorderRadius.circular(8.0),
-                    //           image: DecorationImage(
-                    //             fit: BoxFit.cover,
-                    //             image: NetworkImage(item.imageUrl),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    //
-                    // );
                     return InkWell(
                       onTap: () {
                         // Aquí haces la acción que tú quieras

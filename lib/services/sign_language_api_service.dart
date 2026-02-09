@@ -64,7 +64,10 @@ class SignLanguageApiService {
       final response = await _client
           .post(
             Uri.parse('$baseUrl/api/gestures'),
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true',
+            },
             body: jsonEncode(payload),
           )
           .timeout(const Duration(seconds: 5));

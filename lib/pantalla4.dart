@@ -135,7 +135,7 @@ class _Pantalla4State extends State<Pantalla4> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF4CE489),
+      backgroundColor: const Color(0xFF1a1a2e),
       body: Column(
         children: [
           // Mitad superior - Preview de camara nativo
@@ -177,7 +177,7 @@ class _Pantalla4State extends State<Pantalla4> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
+                          color: const Color(0xFF16213e),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Row(
@@ -272,15 +272,9 @@ class _Pantalla4State extends State<Pantalla4> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: const Color(0xFF16213e),
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
+                        border: Border.all(color: Colors.blue.withOpacity(0.3), width: 2),
                       ),
                       child: Column(
                         children: [
@@ -288,7 +282,7 @@ class _Pantalla4State extends State<Pantalla4> {
                             'Signo detectado:',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.grey,
+                              color: Colors.white54,
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -297,7 +291,7 @@ class _Pantalla4State extends State<Pantalla4> {
                             style: const TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF4CE489),
+                              color: Colors.blue,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -310,22 +304,22 @@ class _Pantalla4State extends State<Pantalla4> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: const Color(0xFF0f3460),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Column(
+                      child: const Column(
                         children: [
                           Icon(
                             Icons.back_hand_outlined,
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white24,
                             size: 48,
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: 12),
                           Text(
                             'Esperando mano...',
                             style: TextStyle(
                               fontSize: 18,
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white54,
                             ),
                           ),
                         ],
@@ -338,23 +332,23 @@ class _Pantalla4State extends State<Pantalla4> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
+                      color: const Color(0xFF16213e),
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: Colors.white,
+                          color: Colors.blue,
                           size: 20,
                         ),
-                        const SizedBox(width: 10),
-                        const Flexible(
+                        SizedBox(width: 10),
+                        Flexible(
                           child: Text(
                             'Coloca tu mano frente a la camara',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.white70,
                               fontSize: 14,
                             ),
                             textAlign: TextAlign.center,

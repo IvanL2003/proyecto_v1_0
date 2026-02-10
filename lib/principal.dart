@@ -89,7 +89,7 @@ class _PrincipalState extends State<Principal> {
     items = items.map((e) => e.toLowerCase()).toList();
 
     return Scaffold(
-      backgroundColor: Color(0XFF4CE489),
+      backgroundColor: const Color(0xFF1a1a2e),
       body: Stack(
         children: [
           // Container(
@@ -144,7 +144,7 @@ class _PrincipalState extends State<Principal> {
                   margin: const EdgeInsets.only(top: 90),
                   // height: 400, // 👈 altura fija
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: const Color(0xFF16213e).withOpacity(0.5),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child:
@@ -402,7 +402,8 @@ class _PrincipalState extends State<Principal> {
                           vertical: 8.0,
                         ),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
+                          color: const Color(0xFF16213e),
+                          border: Border.all(color: Colors.blue.withOpacity(0.3)),
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         padding: const EdgeInsets.all(8),
@@ -417,6 +418,7 @@ class _PrincipalState extends State<Principal> {
                                     item.title,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -424,9 +426,10 @@ class _PrincipalState extends State<Principal> {
                                   const SizedBox(height: 8),
                                   Text(
                                     "${item.author} · ${item.postedOn}",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall,
+                                    style: const TextStyle(
+                                      color: Colors.white54,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                   const SizedBox(height: 8),
                                   Row(
@@ -445,7 +448,7 @@ class _PrincipalState extends State<Principal> {
                                               padding: const EdgeInsets.only(
                                                 right: 8.0,
                                               ),
-                                              child: Icon(e, size: 16),
+                                              child: Icon(e, size: 16, color: Colors.white70),
                                             ),
                                           );
                                         }).toList(),
@@ -489,7 +492,7 @@ class _PrincipalState extends State<Principal> {
                         Text(
                           "Richie Lorie",
                           style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
+                              ?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                         const SizedBox(height: 16),
                         // Row(
@@ -525,7 +528,7 @@ class _PrincipalState extends State<Principal> {
             top: 25,
             right: 10,
             child: PopupMenuButton<String>(
-              icon: const Icon(Icons.language, color: Color(0xff3F423E)),
+              icon: const Icon(Icons.language, color: Colors.white70),
               iconSize: 40,
               // color: Color(0xff3F423E),
               onSelected: (String value) {
@@ -550,8 +553,8 @@ class _PrincipalState extends State<Principal> {
       ),
       bottomNavigationBar: SalomonBottomBar(
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xff6200ee),
-        unselectedItemColor: const Color(0xff3F423E),
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.white54,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
@@ -567,27 +570,27 @@ final _navBarItems = [
   SalomonBottomBarItem(
     icon: const Icon(Icons.home),
     title: const Text("Home"),
-    selectedColor: Colors.pink,
+    selectedColor: Colors.blue,
   ),
   SalomonBottomBarItem(
     icon: const Icon(Icons.auto_stories),
     title: const Text("Curses"),
-    selectedColor: Colors.pink,
+    selectedColor: Colors.blue,
   ),
   SalomonBottomBarItem(
     icon: const Icon(Icons.camera_alt),
     title: const Text("Camera"),
-    selectedColor: Colors.pink,
+    selectedColor: Colors.blue,
   ),
   SalomonBottomBarItem(
     icon: const Icon(Icons.search),
     title: const Text("Search"),
-    selectedColor: Colors.pink,
+    selectedColor: Colors.blue,
   ),
   SalomonBottomBarItem(
     icon: const Icon(Icons.person),
     title: const Text("Profile"),
-    selectedColor: Colors.pink,
+    selectedColor: Colors.blue,
   ),
 ];
 
@@ -644,10 +647,10 @@ class _ProfileInfoRow extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Text(
           item.value.toString(),
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
         ),
       ),
-      Text(item.title, style: Theme.of(context).textTheme.bodySmall),
+      Text(item.title, style: const TextStyle(color: Colors.white54, fontSize: 12)),
     ],
   );
 }

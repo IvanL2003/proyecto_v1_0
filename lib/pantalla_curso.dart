@@ -238,7 +238,7 @@ class _PantallaCursoState extends State<PantallaCurso> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF4CE489),
+      backgroundColor: const Color(0xFF1a1a2e),
       body: Column(
         children: [
           // Mitad superior - Camara nativa
@@ -410,7 +410,7 @@ class _PantallaCursoState extends State<PantallaCurso> {
           // Mitad inferior - Juego
           Expanded(
             flex: 1,
-            child: Container(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: _juegoTerminado
                   ? _buildPantallaFinal()
@@ -446,7 +446,7 @@ class _PantallaCursoState extends State<PantallaCurso> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.3),
+            color: const Color(0xFF16213e),
             borderRadius: BorderRadius.circular(15),
           ),
           child: Column(
@@ -457,7 +457,7 @@ class _PantallaCursoState extends State<PantallaCurso> {
         ElevatedButton(
           onPressed: _iniciarJuego,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
+            backgroundColor: const Color(0xFF0f3460),
             padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
@@ -468,7 +468,7 @@ class _PantallaCursoState extends State<PantallaCurso> {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF4CE489),
+              color: Colors.blue,
             ),
           ),
         ),
@@ -484,15 +484,9 @@ class _PantallaCursoState extends State<PantallaCurso> {
         Container(
           padding: const EdgeInsets.all(30),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFF16213e),
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
-              ),
-            ],
+            border: Border.all(color: Colors.blue.withOpacity(0.3), width: 2),
           ),
           child: Column(
             children: [
@@ -500,7 +494,7 @@ class _PantallaCursoState extends State<PantallaCurso> {
                 'Realiza el signo:',
                 style: TextStyle(
                   fontSize: 20,
-                  color: Colors.grey,
+                  color: Colors.white54,
                 ),
               ),
               const SizedBox(height: 10),
@@ -509,7 +503,7 @@ class _PantallaCursoState extends State<PantallaCurso> {
                 style: const TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF4CE489),
+                  color: Colors.blue,
                 ),
               ),
             ],
@@ -562,7 +556,7 @@ class _PantallaCursoState extends State<PantallaCurso> {
           child: LinearProgressIndicator(
             value: (_palabraActualIndex + 1) / _palabras.length,
             minHeight: 8,
-            backgroundColor: Colors.white.withOpacity(0.3),
+            backgroundColor: const Color(0xFF0f3460),
             valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
           ),
         ),
@@ -578,67 +572,68 @@ class _PantallaCursoState extends State<PantallaCurso> {
       children: [
         Icon(
           ganado ? Icons.emoji_events : Icons.sentiment_dissatisfied,
-          size: 100,
+          size: 60,
           color: Colors.white,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
         Text(
           ganado ? '!Felicitaciones!' : 'Juego Terminado',
           style: const TextStyle(
-            fontSize: 32,
+            fontSize: 26,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         Container(
-          padding: const EdgeInsets.all(30),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xFF16213e),
             borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.blue.withOpacity(0.3), width: 2),
           ),
           child: Column(
             children: [
               const Text(
                 'Puntuacion Final',
                 style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.grey,
+                  fontSize: 16,
+                  color: Colors.white54,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
                 '$_puntuacion',
                 style: const TextStyle(
-                  fontSize: 48,
+                  fontSize: 40,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF4CE489),
+                  color: Colors.blue,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
               Text(
                 'Vidas restantes: $_vidas',
                 style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
+                  fontSize: 15,
+                  color: Colors.white54,
                 ),
               ),
               Text(
                 'Palabras completadas: $_palabraActualIndex',
                 style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
+                  fontSize: 15,
+                  color: Colors.white54,
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed: _iniciarJuego,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+            backgroundColor: const Color(0xFF0f3460),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
@@ -646,9 +641,9 @@ class _PantallaCursoState extends State<PantallaCurso> {
           child: const Text(
             'Jugar de Nuevo',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF4CE489),
+              color: Colors.blue,
             ),
           ),
         ),

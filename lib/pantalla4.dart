@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
-import 'package:flutter/services.dart';
 import 'dart:async';
+import 'models/hand_detection_result.dart';
+import 'services/hand_detection_service.dart';
+import 'services/sign_language_api_service.dart';
+import 'widgets/native_camera_preview.dart';
 
 class Pantalla4 extends StatefulWidget {
   const Pantalla4({super.key});
@@ -11,133 +13,132 @@ class Pantalla4 extends StatefulWidget {
 }
 
 class _Pantalla4State extends State<Pantalla4> {
-  CameraController? _cameraController;
-  List<CameraDescription>? _cameras;
-  bool _isInitialized = false;
+  final HandDetectionService _detectionService = HandDetectionService();
+  final SignLanguageApiService _apiService = SignLanguageApiService(
+    baseUrl: 'https://subcruciform-treacherously-sam.ngrok-free.dev', // ngrok tunnel publico
+  );
+
+  StreamSubscription<HandDetectionResult>? _landmarkSubscription;
+  bool _isDetecting = false;
+  bool _cameraReady = false;
   String _detectedSign = "Esperando...";
   double _confidence = 0.0;
-  bool _isProcessing = false;
-
-  static const platform = MethodChannel('com.example.proyecto_v1_0/sign_language');
+  bool _isProcessingApi = false;
+  int _handsDetected = 0;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
-    _startSignDetection();
+    // Esperar un frame para que el AndroidView se monte antes de iniciar deteccion
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startDetection();
+    });
   }
 
-  Future<void> _initializeCamera() async {
+  Future<void> _startDetection() async {
+    // Delay para asegurar que el AndroidView (NativeCameraPreview)
+    // esta completamente montado y el PreviewView esta registrado
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (!mounted) return;
+
     try {
-      // Obtener todas las c�maras disponibles
-      _cameras = await availableCameras();
-
-      if (_cameras == null || _cameras!.isEmpty) {
-        print('No se encontraron c�maras');
-        return;
-      }
-
-      // Buscar la c�mara frontal
-      CameraDescription frontCamera;
-      try {
-        frontCamera = _cameras!.firstWhere(
-          (camera) => camera.lensDirection == CameraLensDirection.front,
-        );
-      } catch (e) {
-        // Si no hay c�mara frontal, usar la primera disponible
-        frontCamera = _cameras!.first;
-      }
-
-      // Inicializar el controlador con resoluci�n media para mejor rendimiento
-      _cameraController = CameraController(
-        frontCamera,
-        ResolutionPreset.medium,
-        enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420,
+      // Escuchar el stream de landmarks
+      _landmarkSubscription = _detectionService.landmarkStream.listen(
+        _onLandmarkData,
       );
 
-      await _cameraController!.initialize();
+      // Iniciar deteccion con preview
+      await _detectionService.startDetectionWithPreview();
 
-      if (!mounted) return;
-
-      setState(() {
-        _isInitialized = true;
-      });
-
-      // Iniciar el stream de im�genes para procesamiento
-      _cameraController!.startImageStream((CameraImage image) {
-        if (!_isProcessing) {
-          _processImage(image);
-        }
-      });
+      if (mounted) {
+        setState(() {
+          _isDetecting = true;
+          _cameraReady = true;
+        });
+      }
     } catch (e) {
-      print('Error al inicializar la camara: $e');
+      if (mounted) {
+        setState(() {
+          _detectedSign = "Error: $e";
+        });
+      }
     }
   }
 
-  Future<void> _processImage(CameraImage image) async {
-    _isProcessing = true;
+  void _onLandmarkData(HandDetectionResult result) {
+    if (!mounted) return;
+
+    final hadHands = _handsDetected > 0;
+
+    setState(() {
+      _handsDetected = result.hands.length;
+    });
+
+    // Si deja de detectar manos, limpiar resultado
+    if (hadHands && _handsDetected == 0) {
+      setState(() {
+        _detectedSign = "Esperando...";
+        _confidence = 0.0;
+      });
+    }
+
+    if (result.hasHands && !_isProcessingApi) {
+      _sendToApi(result.firstHand!);
+    }
+  }
+
+  Future<void> _sendToApi(HandData handData) async {
+    if (_isProcessingApi) return;
+    _isProcessingApi = true;
 
     try {
-      // Aqu� llamar�as al c�digo Python a trav�s del MethodChannel
-      // Por ahora, simulamos la detecci�n
-      final result = await platform.invokeMethod('detectSign', {
-        'width': image.width,
-        'height': image.height,
-        'planes': image.planes.map((plane) => {
-          'bytes': plane.bytes,
-          'bytesPerRow': plane.bytesPerRow,
-        }).toList(),
-      });
+      final response = await _apiService.sendLandmarks(
+        handData: handData,
+        palabraObjetivo: '', // Pantalla4 no tiene palabra objetivo (modo libre)
+      );
 
-      if (mounted) {
+      if (mounted && response != null) {
         setState(() {
-          _detectedSign = result['sign'] ?? 'Desconocido';
-          _confidence = result['confidence'] ?? 0.0;
+          if (response['correcto'] == true) {
+            _detectedSign = response['mensaje'] ?? 'Gesto reconocido';
+            _confidence = (response['confianza'] as num?)?.toDouble() ?? 0.0;
+          } else {
+            _detectedSign = response['mensaje'] ?? 'Analizando...';
+            _confidence = (response['confianza'] as num?)?.toDouble() ?? 0.0;
+          }
         });
       }
     } catch (e) {
-      // Si el metodo nativo no est� implementado, usar datos simulados
-      await Future.delayed(const Duration(milliseconds: 500));
+      // No bloquear al usuario si falla la API
       if (mounted) {
         setState(() {
-          _detectedSign = _getDemoSign();
-          _confidence = 0.85;
+          _detectedSign = _handsDetected > 0
+              ? 'Mano detectada (API no disponible)'
+              : 'Esperando...';
         });
       }
     }
 
-    _isProcessing = false;
-  }
-
-  String _getDemoSign() {
-    // Simula detecci�n rotando entre diferentes signos
-    final signs = ['Hola', 'Gracias', 'Por favor', 'Adios', 'Si', 'No'];
-    return signs[DateTime.now().second % signs.length];
-  }
-
-  void _startSignDetection() {
-    // Timer para actualizar la detecci�n peri�dicamente
-    Timer.periodic(const Duration(seconds: 2), (timer) {
-      if (!mounted) {
-        timer.cancel();
-      }
-    });
+    // Throttle: esperar 1 segundo antes del siguiente envio
+    await Future.delayed(const Duration(seconds: 1));
+    _isProcessingApi = false;
   }
 
   @override
   void dispose() {
-    _cameraController?.dispose();
+    _landmarkSubscription?.cancel();
+    _detectionService.stopDetection();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF4CE489),
+      backgroundColor: const Color(0xFF1a1a2e),
       body: Column(
         children: [
-          // Mitad superior - Preview de c�mara
+          // Mitad superior - Preview de camara nativo
           Expanded(
             flex: 1,
             child: Container(
@@ -160,68 +161,70 @@ class _Pantalla4State extends State<Pantalla4> {
                   bottomLeft: Radius.circular(30),
                   bottomRight: Radius.circular(30),
                 ),
-                child: _isInitialized && _cameraController != null
-                    ? Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          CameraPreview(_cameraController!),
-                          Positioned(
-                            top: 40,
-                            left: 20,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.camera_front,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Camara Frontal',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Preview de camara nativo (CameraX via PlatformView)
+                    const NativeCameraPreview(),
+
+                    // Label de camara frontal
+                    Positioned(
+                      top: 40,
+                      left: 20,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF16213e),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.camera_front,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Camara Frontal',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                          // Indicador de procesamiento
-                          if (_isProcessing)
-                            Positioned(
-                              top: 40,
-                              right: 20,
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.red.withOpacity(0.8),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      )
-                    : const Center(
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Indicador de manos detectadas
+                    Positioned(
+                      top: 40,
+                      right: 20,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: _handsDetected > 0
+                              ? Colors.green.withOpacity(0.8)
+                              : Colors.red.withOpacity(0.8),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          _handsDetected > 0
+                              ? Icons.back_hand
+                              : Icons.back_hand_outlined,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+
+                    // Loading mientras no esta lista la camara
+                    if (!_cameraReady)
+                      const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -230,7 +233,7 @@ class _Pantalla4State extends State<Pantalla4> {
                             ),
                             SizedBox(height: 20),
                             Text(
-                              'Iniciando c�mara...',
+                              'Iniciando camara...',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -239,90 +242,113 @@ class _Pantalla4State extends State<Pantalla4> {
                           ],
                         ),
                       ),
+                  ],
+                ),
               ),
             ),
           ),
 
-          // Mitad inferior - Resultados de detecci�n
+          // Mitad inferior - Resultados de deteccion
           Expanded(
             flex: 1,
-            child: Container(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // T�tulo
                   const Text(
                     'Deteccion de Lenguaje de Signos',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 16),
 
-                  // Resultado principal
-                  Container(
-                    padding: const EdgeInsets.all(30),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        const Text(
-                          'Signo detectado:',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey,
+                  // Resultado principal - solo visible cuando hay mano
+                  if (_handsDetected > 0 && _detectedSign != "Esperando...")
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF16213e),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.blue.withOpacity(0.3), width: 2),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Signo detectado:',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white54,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          _detectedSign,
-                          style: const TextStyle(
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF4CE489),
+                          const SizedBox(height: 10),
+                          Text(
+                            _detectedSign,
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    )
+                  else
+                    // Mensaje cuando no hay mano
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0f3460),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Column(
+                        children: [
+                          Icon(
+                            Icons.back_hand_outlined,
+                            color: Colors.white24,
+                            size: 48,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            'Esperando mano...',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white54,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
-                  // Informaci�n adicional
+                  // Informacion adicional
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
+                      color: const Color(0xFF16213e),
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: Colors.white,
+                          color: Colors.blue,
                           size: 20,
                         ),
-                        const SizedBox(width: 10),
-                        const Flexible(
+                        SizedBox(width: 10),
+                        Flexible(
                           child: Text(
                             'Coloca tu mano frente a la camara',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.white70,
                               fontSize: 14,
                             ),
                             textAlign: TextAlign.center,

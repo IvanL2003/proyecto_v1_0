@@ -35,7 +35,7 @@ class SignLanguageApiService {
   final String baseUrl;
   final http.Client _client;
   DateTime? _lastSentTime;
-  static const _minInterval = Duration(seconds: 1);
+  static const _minInterval = Duration(milliseconds: 300);
 
   SignLanguageApiService({
     required this.baseUrl,

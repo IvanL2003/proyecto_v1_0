@@ -43,7 +43,7 @@ class HandDetectionService {
     try {
       await _methodChannel.invokeMethod('startHandDetection');
       _isDetecting = true;
-    } on PlatformException catch (e) {
+    } on PlatformException catch (_) {
       _isDetecting = false;
       _streamSubscription?.cancel();
       rethrow;
@@ -63,7 +63,7 @@ class HandDetectionService {
         'useFrontCamera': useFrontCamera,
       });
       _isDetecting = true;
-    } on PlatformException catch (e) {
+    } on PlatformException catch (_) {
       _isDetecting = false;
       _streamSubscription?.cancel();
       rethrow;

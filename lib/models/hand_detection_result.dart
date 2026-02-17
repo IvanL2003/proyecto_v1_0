@@ -1,3 +1,5 @@
+import 'dart:math';
+
 /// Representa un punto landmark de la mano con coordenadas x, y, z.
 class HandLandmark {
   final double x;
@@ -58,13 +60,49 @@ class HandData {
     return result;
   }
 
-  /// Genera el payload completo para la API.
+  /// Normaliza landmarks: resta muñeca como origen y escala por distancia maxima.
+  /// Mantiene formato punto1/punto2 con coordx/coordy/coordz.
+  Map<String, dynamic> normalizedLandmarksToApiFormat() {
+    if (landmarks.isEmpty) return {};
+
+    final wx = landmarks[0].x;
+    final wy = landmarks[0].y;
+    final wz = landmarks[0].z;
+
+    // Centrar respecto a la muñeca
+    final centered = landmarks.map((lm) => [
+      lm.x - wx,
+      lm.y - wy,
+      lm.z - wz,
+    ]).toList();
+
+    // Distancia maxima desde la muñeca
+    double maxDist = 0.0;
+    for (final p in centered) {
+      final dist = sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2]);
+      if (dist > maxDist) maxDist = dist;
+    }
+    if (maxDist == 0.0) maxDist = 1.0;
+
+    // Escalar y formatear
+    final Map<String, dynamic> result = {};
+    for (int i = 0; i < centered.length; i++) {
+      result['punto${i + 1}'] = {
+        'coordx': centered[i][0] / maxDist,
+        'coordy': centered[i][1] / maxDist,
+        'coordz': centered[i][2] / maxDist,
+      };
+    }
+    return result;
+  }
+
+  /// Genera el payload completo para la API con landmarks normalizados.
   Map<String, dynamic> toApiPayload(String palabraObjetivo) {
     return {
       'palabra_objetivo': palabraObjetivo,
       'mano': handedness,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
-      'landmarks': landmarksToApiFormat(),
+      'landmarks': normalizedLandmarksToApiFormat(),
     };
   }
 }

@@ -11,7 +11,7 @@ import io.flutter.plugin.platform.PlatformView;
 /**
  * PlatformView que contiene un PreviewView de CameraX.
  * Se usa desde Flutter mediante AndroidView para mostrar el preview de la camara
- * mientras HandLandmarkPlugin_copia procesa los frames con MediaPipe.
+ * mientras HandLandmarkPlugin procesa los frames con MediaPipe.
  */
 public class CameraPreviewView implements PlatformView {
 
@@ -24,7 +24,7 @@ public class CameraPreviewView implements PlatformView {
     }
 
     /**
-     * Devuelve el PreviewView para que HandLandmarkPlugin_copia lo use
+     * Devuelve el PreviewView para que HandLandmarkPlugin lo use
      * como surface provider del Preview use case de CameraX.
      */
     public PreviewView getPreviewView() {

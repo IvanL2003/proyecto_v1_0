@@ -35,7 +35,7 @@ class SignLanguageApiService {
   final String baseUrl;
   final http.Client _client;
   DateTime? _lastSentTime;
-  static const _minInterval = Duration(milliseconds: 300);
+  static const _minInterval = Duration(milliseconds: 100);
 
   SignLanguageApiService({
     required this.baseUrl,
@@ -45,7 +45,7 @@ class SignLanguageApiService {
   /// Envia las coordenadas de los landmarks a la API.
   ///
   /// Retorna el Map de la respuesta de la API, o null si fue throttled o hubo error.
-  /// Incluye throttle interno de 1 segundo entre envios.
+  /// Incluye throttle interno de 0.1 segundos entre envios.
   Future<Map<String, dynamic>?> sendLandmarks({
     required HandData handData,
     required String palabraObjetivo,

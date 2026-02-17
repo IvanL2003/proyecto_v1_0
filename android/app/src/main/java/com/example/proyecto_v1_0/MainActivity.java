@@ -172,7 +172,7 @@ public class MainActivity extends FlutterActivity {
                             checkCameraPermission();
                             break;
                         case "stopHandDetection":
-                            HandLandmarkPlugin_copia.stop();
+                            HandLandmarkPlugin.stop();
                             result.success(null);
                             break;
                         default:
@@ -185,12 +185,12 @@ public class MainActivity extends FlutterActivity {
                 .setStreamHandler(new EventChannel.StreamHandler() {
                     @Override
                     public void onListen(Object arguments, EventChannel.EventSink events) {
-                        HandLandmarkPlugin_copia.setEventSink(events);
+                        HandLandmarkPlugin.setEventSink(events);
                     }
                     
                     @Override
                     public void onCancel(Object arguments) {
-                        HandLandmarkPlugin_copia.setEventSink(null);
+                        HandLandmarkPlugin.setEventSink(null);
                     }
                 });
     }
@@ -238,11 +238,11 @@ public class MainActivity extends FlutterActivity {
         if (pendingWithPreview) {
             // startWithPreview usa el PreviewView que ya fue registrado
             // por CameraPreviewFactory cuando Flutter creo el AndroidView
-            HandLandmarkPlugin_copia.startWithPreview(this,
-                    HandLandmarkPlugin_copia.getPreviewView());
+            HandLandmarkPlugin.startWithPreview(this,
+                    HandLandmarkPlugin.getPreviewView());
         } else {
             // Modo headless (compatibilidad con test_pantalla_curso)
-            HandLandmarkPlugin_copia.start(this);
+            HandLandmarkPlugin.start(this);
         }
         
         if (pendingResult != null) {
@@ -254,6 +254,6 @@ public class MainActivity extends FlutterActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        HandLandmarkPlugin_copia.stop();
+        HandLandmarkPlugin.stop();
     }
 }

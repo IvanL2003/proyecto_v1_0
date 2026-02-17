@@ -12,11 +12,11 @@ import io.flutter.plugin.platform.PlatformViewFactory;
 
 /**
  * Factory que crea instancias de CameraPreviewView.
- * Se registra en MainActivity_copia con el viewType "com.example.proyecto_v1_0/camera_preview".
+ * Se registra en MainActivity con el viewType "com.example.proyecto_v1_0/camera_preview".
  *
  * Cuando Flutter crea un AndroidView con ese viewType, esta factory
  * instancia un CameraPreviewView y configura su PreviewView en
- * HandLandmarkPlugin_copia para que CameraX muestre el preview.
+ * HandLandmarkPlugin para que CameraX muestre el preview.
  */
 public class CameraPreviewFactory extends PlatformViewFactory {
 
@@ -33,7 +33,7 @@ public class CameraPreviewFactory extends PlatformViewFactory {
         CameraPreviewView cameraPreviewView = new CameraPreviewView(activity);
 
         // Registrar el PreviewView en el plugin para que CameraX lo use
-        HandLandmarkPlugin_copia.setPreviewView(cameraPreviewView.getPreviewView());
+        HandLandmarkPlugin.setPreviewView(cameraPreviewView.getPreviewView());
 
         return cameraPreviewView;
     }

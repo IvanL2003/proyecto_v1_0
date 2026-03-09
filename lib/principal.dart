@@ -20,66 +20,32 @@ class _PrincipalState extends State<Principal> {
 
   // Sustantivos más usados en español
   List<String> items = [
-    'Tiempo', 'Persona', 'Año', 'Dia', 'Cosa',
-    'Hombre', 'Mujer', 'Vida', 'Mano', 'Parte',
-
-    // 'Niño', 'Mundo', 'Momento', 'Trabajo', 'Lugar',
-    // 'Caso', 'Punto', 'Gente', 'Problema', 'Forma',
-    // 'Ciudad', 'País', 'Noche', 'Agua', 'Familia',
-    // 'Historia', 'Mes', 'Dinero', 'Palabra', 'Camino',
-    // 'Sociedad', 'Padre', 'Madre', 'Amigo', 'Cuerpo',
-    // 'Idea', 'Niña', 'Hijo', 'Nombre', 'Realidad',
-    'Rojo', 'Azul', 'Verde', 'Amarillo', 'Negro',
-    'Blanco', 'Gris', 'Naranja', 'Marron', 'Rosa',
-    // 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-    // 'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's',
-    // 't', 'u', 'v', 'w', 'x', 'y', 'z'
+    // 'Tiempo', 'Persona', 'Año', 'Dia', 'Cosa',
+    // 'Hombre', 'Mujer', 'Vida', 'Mano', 'Parte',
+    //
+    // // 'Niño', 'Mundo', 'Momento', 'Trabajo', 'Lugar',
+    // // 'Caso', 'Punto', 'Gente', 'Problema', 'Forma',
+    // // 'Ciudad', 'País', 'Noche', 'Agua', 'Familia',
+    // // 'Historia', 'Mes', 'Dinero', 'Palabra', 'Camino',
+    // // 'Sociedad', 'Padre', 'Madre', 'Amigo', 'Cuerpo',
+    // // 'Idea', 'Niña', 'Hijo', 'Nombre', 'Realidad',
+    // 'Rojo', 'Azul', 'Verde', 'Amarillo', 'Negro',
+    // 'Blanco', 'Gris', 'Naranja', 'Marron', 'Rosa',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+    'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's',
+    't', 'u', 'v', 'w', 'x', 'y', 'z',
   ];
 
   final List<Article> _articles = [
     Article(
-      title: "Instagram quietly limits ‘daily time limit’ option",
-      author: "MacRumors",
-      imageUrl: "https://picsum.photos/id/1000/960/540",
-      postedOn: "Yesterday",
-    ),
-    Article(
-      title: "Google Search dark theme goes fully black for some on the web",
-      imageUrl: "https://picsum.photos/id/1010/960/540",
-      author: "9to5Google",
-      postedOn: "4 hours ago",
-    ),
-    Article(
-      title: "Check your iPhone now: warning signs someone is spying on you",
-      author: "New York Times",
-      imageUrl: "https://picsum.photos/id/1001/960/540",
-      postedOn: "2 days ago",
-    ),
-    Article(
-      title:
-          "Amazon’s incredibly popular Lost Ark MMO is ‘at capacity’ in central Europe",
-      author: "MacRumors",
-      imageUrl: "https://picsum.photos/id/1002/960/540",
-      postedOn: "22 hours ago",
-    ),
-    Article(
-      title:
-          "Panasonic's 25-megapixel GH6 is the highest resolution Micro Four Thirds camera yet",
-      author: "Polygon",
-      imageUrl: "https://picsum.photos/id/1020/960/540",
-      postedOn: "2 hours ago",
-    ),
-    Article(
-      title: "Samsung Galaxy S22 Ultra charges strangely slowly",
-      author: "TechRadar",
-      imageUrl: "https://picsum.photos/id/1021/960/540",
-      postedOn: "10 days ago",
-    ),
-    Article(
-      title: "Snapchat unveils real-time location sharing",
-      author: "Fox Business",
-      imageUrl: "https://picsum.photos/id/1060/960/540",
-      postedOn: "10 hours ago",
+      title: "Vocales",
+      author: "Iván Lázaro Vela",
+      imageUrl:
+          "https://imgs.search.brave.com/Q6DN3Csh7mtK-s47-vwMX06NlBoG5dHzwbwFrwF4dA0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTE5/MTg5OTYwNy9lcy9m/b3RvL3ZvY2FsZXMt/ZGUtY29sb3Jlcy1l/bi1hcmNpbGxhLWNv/bi1mb25kby1ibGFu/Y28uanBnP3M9NjEy/eDYxMiZ3PTAmaz0y/MCZjPTVQaUptaFBj/RlhfOUxEQlNfZFU3/bWN0M1JQbXdSYnJy/TlU5ZFNxU3lzMDg9",
+      postedOn: "1 month ago",
+      palabras: [
+        'a','e','i','o','u'
+      ],
     ),
   ];
 
@@ -389,9 +355,7 @@ class _PrincipalState extends State<Principal> {
                         // Ejemplo: navegar
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => PantallaCurso(),
-                          ),
+                          MaterialPageRoute(builder: (_) => PantallaCurso()),
                         );
                       },
 
@@ -403,7 +367,9 @@ class _PrincipalState extends State<Principal> {
                         ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF16213e),
-                          border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                          border: Border.all(
+                            color: Colors.blue.withOpacity(0.3),
+                          ),
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         padding: const EdgeInsets.all(8),
@@ -448,7 +414,11 @@ class _PrincipalState extends State<Principal> {
                                               padding: const EdgeInsets.only(
                                                 right: 8.0,
                                               ),
-                                              child: Icon(e, size: 16, color: Colors.white70),
+                                              child: Icon(
+                                                e,
+                                                size: 16,
+                                                color: Colors.white70,
+                                              ),
                                             ),
                                           );
                                         }).toList(),
@@ -477,8 +447,7 @@ class _PrincipalState extends State<Principal> {
               ),
             ),
 
-          if (_selectedIndex == 2)
-            const Pantalla4(),
+          if (_selectedIndex == 2) const Pantalla4(),
           if (_selectedIndex == 4)
             Column(
               children: [
@@ -492,7 +461,10 @@ class _PrincipalState extends State<Principal> {
                         Text(
                           "Richie Lorie",
                           style: Theme.of(context).textTheme.headlineMedium
-                              ?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                         ),
                         const SizedBox(height: 16),
                         // Row(
@@ -599,12 +571,15 @@ class Article {
   final String imageUrl;
   final String author;
   final String postedOn;
+  final List<String> palabras;
+
 
   Article({
     required this.title,
     required this.imageUrl,
     required this.author,
     required this.postedOn,
+    required this.palabras,
   });
 }
 
@@ -647,10 +622,17 @@ class _ProfileInfoRow extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Text(
           item.value.toString(),
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.white,
+          ),
         ),
       ),
-      Text(item.title, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+      Text(
+        item.title,
+        style: const TextStyle(color: Colors.white54, fontSize: 12),
+      ),
     ],
   );
 }
@@ -699,7 +681,7 @@ class _TopPortion extends StatelessWidget {
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: NetworkImage(
-                        'https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg'
+                        'https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg',
                         // 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
                       ),
                     ),

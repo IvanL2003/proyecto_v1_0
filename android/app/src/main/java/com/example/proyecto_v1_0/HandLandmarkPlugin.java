@@ -402,7 +402,10 @@ public class HandLandmarkPlugin {
     
     // Preview support
     private static PreviewView previewView;
-    
+
+    // Seleccion de camara (frontal por defecto)
+    public static boolean useFrontCamera = true;
+
     // Configuracion
     private static final int MAX_HANDS = 2;
     private static final float MIN_DETECTION_CONFIDENCE = 0.5f;
@@ -619,8 +622,10 @@ public class HandLandmarkPlugin {
             analyzeImage(imageProxy);
         });
         
-        // Camera selector (camara frontal)
-        CameraSelector cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
+        // Camera selector
+        CameraSelector cameraSelector = useFrontCamera
+                ? CameraSelector.DEFAULT_FRONT_CAMERA
+                : CameraSelector.DEFAULT_BACK_CAMERA;
         
         try {
             // Desvincular casos de uso anteriores

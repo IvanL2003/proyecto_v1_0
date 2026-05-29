@@ -167,6 +167,8 @@ public class MainActivity extends FlutterActivity {
                             checkCameraPermission();
                             break;
                         case "startHandDetectionWithPreview":
+                            Boolean front = call.argument("useFrontCamera");
+                            HandLandmarkPlugin.useFrontCamera = (front == null || front);
                             pendingResult = result;
                             pendingWithPreview = true;
                             checkCameraPermission();

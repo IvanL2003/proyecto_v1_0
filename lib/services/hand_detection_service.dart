@@ -43,7 +43,7 @@ class HandDetectionService {
     try {
       await _methodChannel.invokeMethod('startHandDetection');
       _isDetecting = true;
-    } on PlatformException catch (e) {
+    } on PlatformException catch (_) {
       _isDetecting = false;
       _streamSubscription?.cancel();
       rethrow;
@@ -53,15 +53,17 @@ class HandDetectionService {
   /// Inicia la deteccion de manos CON preview de camara.
   /// El AndroidView con el PreviewView debe estar ya montado en el widget tree
   /// antes de llamar a este metodo.
-  Future<void> startDetectionWithPreview() async {
+  Future<void> startDetectionWithPreview({bool useFrontCamera = true}) async {
     if (_isDetecting) return;
 
     _setupStreamListener();
 
     try {
-      await _methodChannel.invokeMethod('startHandDetectionWithPreview');
+      await _methodChannel.invokeMethod('startHandDetectionWithPreview', {
+        'useFrontCamera': useFrontCamera,
+      });
       _isDetecting = true;
-    } on PlatformException catch (e) {
+    } on PlatformException catch (_) {
       _isDetecting = false;
       _streamSubscription?.cancel();
       rethrow;

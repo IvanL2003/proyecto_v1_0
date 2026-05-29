@@ -399,7 +399,10 @@ public class HandLandmarkPlugin {
     private static boolean isProcessing = false;
     private static LifecycleOwner lifecycleOwner;
     private static EventChannel.EventSink eventSink;
-    
+
+    // Clasificador de gestos
+    private static GestureClassifier gestureClassifier;
+
     // Preview support
     private static PreviewView previewView;
 
@@ -448,8 +451,9 @@ public class HandLandmarkPlugin {
             }
             
             setupHandLandmarker(context);
+            setupGestureClassifier(context);
             startCamera(context);
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Error iniciando deteccion: " + e.getMessage());
             if (eventSink != null) {
@@ -457,7 +461,7 @@ public class HandLandmarkPlugin {
             }
         }
     }
-    
+
     /**
      * Inicializa y comienza la deteccion de manos CON preview de camara
      */
@@ -465,15 +469,16 @@ public class HandLandmarkPlugin {
         previewView = view;
         try {
             Log.d(TAG, "Iniciando deteccion de manos con preview...");
-            
+
             if (context instanceof LifecycleOwner) {
                 lifecycleOwner = (LifecycleOwner) context;
             } else {
                 Log.e(TAG, "Context debe ser una Activity/LifecycleOwner");
                 return;
             }
-            
+
             setupHandLandmarker(context);
+            setupGestureClassifier(context);
             startCamera(context);
             
         } catch (Exception e) {
@@ -484,6 +489,23 @@ public class HandLandmarkPlugin {
         }
     }
     
+    /**
+     * Inicializa el clasificador de gestos TFLite
+     */
+    private static void setupGestureClassifier(Context context) {
+        try {
+            if (gestureClassifier != null) {
+                gestureClassifier.close();
+            }
+            gestureClassifier = new GestureClassifier(context);
+            gestureClassifier.setConfidenceThreshold(0.5f);
+            Log.d(TAG, "GestureClassifier inicializado correctamente");
+        } catch (Exception e) {
+            Log.e(TAG, "Error inicializando GestureClassifier: " + e.getMessage());
+            gestureClassifier = null;
+        }
+    }
+
     /**
      * Configura el HandLandmarker de MediaPipe
      */
@@ -569,7 +591,19 @@ public class HandLandmarkPlugin {
             handData.put("worldLandmarks", worldLandmarkList);
             handData.put("handedness", handedness);
             handData.put("handednessScore", handednessScore);
-            
+
+            // Clasificar gesto con TFLite
+            if (gestureClassifier != null) {
+                float[] features = HandFeatureExtractor.extract(landmarks);
+                if (features != null) {
+                    Map<String, Object> gesture = gestureClassifier.classify(features);
+                    if (gesture != null) {
+                        handData.put("gesture", gesture.get("label"));
+                        handData.put("gestureConfidence", gesture.get("confidence"));
+                    }
+                }
+            }
+
             handsData.add(handData);
         }
         
@@ -740,7 +774,12 @@ public class HandLandmarkPlugin {
             handLandmarker.close();
             handLandmarker = null;
         }
-        
+
+        if (gestureClassifier != null) {
+            gestureClassifier.close();
+            gestureClassifier = null;
+        }
+
         if (executorService != null) {
             executorService.shutdown();
             executorService = null;

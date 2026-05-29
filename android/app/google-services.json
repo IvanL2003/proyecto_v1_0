@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "896351081258",
+    "project_id": "simba-cd72c",
+    "storage_bucket": "simba-cd72c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896351081258:android:1eb076a2ce1c36b44dc453",
+        "android_client_info": {
+          "package_name": "com.example.anadido_simba"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUYt2lbMITWY515LyGv-aEKpr8nlrcy_4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896351081258:android:cdbbdf5fc50e765a4dc453",
+        "android_client_info": {
+          "package_name": "com.example.proyecto_v1_0"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBUYt2lbMITWY515LyGv-aEKpr8nlrcy_4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

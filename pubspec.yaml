@@ -39,6 +39,14 @@ dependencies:
   path_provider: ^2.1.1
   http: ^1.1.0
 
+  # Firebase (autenticación y Firestore para la pestaña SIMBA)
+  firebase_core: ^4.9.0
+  firebase_auth: ^6.5.1
+  cloud_firestore: ^6.4.1
+
+  # WebView para el stream MJPEG de la Raspberry Pi
+  webview_flutter: ^4.10.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

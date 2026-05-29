@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter run:*)",
+      "Bash(flutter devices:*)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(./gradlew clean:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter emulators:*)",
+      "WebFetch(domain:mvnrepository.com)",
+      "Bash(curl:*)",
+      "Bash(flutter clean:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(timeout:*)",
+      "Bash(ngrok version:*)",
+      "Bash(winget install:*)",
+      "Bash(choco install:*)"
+    ]
+  }
+}

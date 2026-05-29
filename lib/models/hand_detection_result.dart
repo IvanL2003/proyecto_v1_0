@@ -19,18 +19,26 @@ class HandLandmark {
   Map<String, double> toMap() => {'coordx': x, 'coordy': y, 'coordz': z};
 }
 
-/// Datos de una mano detectada: landmarks, world landmarks, y clasificacion.
+/// Datos de una mano detectada: landmarks, world landmarks, clasificacion y gesto.
 class HandData {
   final List<HandLandmark> landmarks;
   final List<HandLandmark> worldLandmarks;
   final String handedness;
   final double handednessScore;
 
+  /// Gesto clasificado por TFLite (ej: "A", "B", ... "Z"). Null si no se detecto.
+  final String? gesture;
+
+  /// Confianza de la clasificacion del gesto (0.0 - 1.0). Null si no se detecto.
+  final double? gestureConfidence;
+
   HandData({
     required this.landmarks,
     required this.worldLandmarks,
     required this.handedness,
     required this.handednessScore,
+    this.gesture,
+    this.gestureConfidence,
   });
 
   factory HandData.fromMap(Map<String, dynamic> map) {
@@ -47,6 +55,8 @@ class HandData {
       worldLandmarks: worldLandmarksList,
       handedness: map['handedness'] as String? ?? 'Unknown',
       handednessScore: (map['handednessScore'] as num?)?.toDouble() ?? 0.0,
+      gesture: map['gesture'] as String?,
+      gestureConfidence: (map['gestureConfidence'] as num?)?.toDouble(),
     );
   }
 

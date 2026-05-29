@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:proyecto_v1_0/pantallaDescrip.dart';
 import 'package:proyecto_v1_0/pantalla3.dart';
 import 'package:proyecto_v1_0/pantalla4.dart';
 import 'package:proyecto_v1_0/pantalla_curso.dart';
+import 'package:proyecto_v1_0/services/auth_service.dart';
+import 'package:proyecto_v1_0/simba_tab.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class Principal extends StatefulWidget {
@@ -17,6 +20,19 @@ class _PrincipalState extends State<Principal> {
   int _selectedIndex = 0;
   String selectedLanguage = 'Inglés'; // valor inicial
   final List<String> languages = ['Español', 'Inglés', 'Francés'];
+
+  String _serverIp = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadServerIp();
+  }
+
+  Future<void> _loadServerIp() async {
+    final ip = await AuthService().getServerIp();
+    if (mounted) setState(() => _serverIp = ip);
+  }
 
   // Sustantivos más usados en español
   List<String> items = [
@@ -448,6 +464,7 @@ class _PrincipalState extends State<Principal> {
             ),
 
           if (_selectedIndex == 2) const Pantalla4(),
+          if (_selectedIndex == 5) const SimbaTab(),
           if (_selectedIndex == 4)
             Column(
               children: [
@@ -458,38 +475,69 @@ class _PrincipalState extends State<Principal> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
+                        // Email del usuario autenticado
                         Text(
-                          "Richie Lorie",
-                          style: Theme.of(context).textTheme.headlineMedium
+                          FirebaseAuth.instance.currentUser?.email ?? '',
+                          style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
+                          textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 16),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: [
-                        //     FloatingActionButton.extended(
-                        //       onPressed: () {},
-                        //       heroTag: 'follow',
-                        //       elevation: 0,
-                        //       label: const Text("Follow"),
-                        //       icon: const Icon(Icons.person_add_alt_1),
-                        //     ),
-                        //     const SizedBox(width: 16.0),
-                        //     FloatingActionButton.extended(
-                        //       onPressed: () {},
-                        //       heroTag: 'mesage',
-                        //       elevation: 0,
-                        //       backgroundColor: Colors.red,
-                        //       label: const Text("Message"),
-                        //       icon: const Icon(Icons.message_rounded),
-                        //     ),
-                        //   ],
-                        // ),
-                        const SizedBox(height: 16),
-                        const _ProfileInfoRow(),
+                        const SizedBox(height: 24),
+                        // Servidor guardado en Firestore
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF16213e),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.blue.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'Servidor Raspberry Pi',
+                                style: TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.router,
+                                    size: 16,
+                                    color: _serverIp.isNotEmpty
+                                        ? Colors.green.shade400
+                                        : Colors.white24,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _serverIp.isNotEmpty
+                                        ? _serverIp
+                                        : 'Sin configurar',
+                                    style: TextStyle(
+                                      color: _serverIp.isNotEmpty
+                                          ? Colors.green.shade400
+                                          : Colors.white38,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -527,6 +575,7 @@ class _PrincipalState extends State<Principal> {
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.white54,
+        itemPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         onTap: (index) {
           setState(() {
             _selectedIndex = index;
@@ -562,6 +611,11 @@ final _navBarItems = [
   SalomonBottomBarItem(
     icon: const Icon(Icons.person),
     title: const Text("Profile"),
+    selectedColor: Colors.blue,
+  ),
+  SalomonBottomBarItem(
+    icon: const Icon(Icons.videocam),
+    title: const Text("SIMBA"),
     selectedColor: Colors.blue,
   ),
 ];

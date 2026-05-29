@@ -3,6 +3,8 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Google Services (Firebase)
+    id("com.google.gms.google-services")
 }
 android {
     namespace = "com.example.proyecto_v1_0"
@@ -53,4 +55,7 @@ dependencies {
 
     // Guava (requerido por CameraX)
     implementation("com.google.guava:guava:31.1-android")
+
+    // TensorFlow Lite
+    implementation("org.tensorflow:tensorflow-lite:2.16.1")
 }

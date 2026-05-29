@@ -81,10 +81,24 @@ class _Pantalla4State extends State<Pantalla4> {
         _detectedSign = "Esperando...";
         _confidence = 0.0;
       });
+      return;
     }
 
-    if (result.hasHands && !_isProcessingApi) {
-      _sendToApi(result.firstHand!);
+    if (result.hasHands) {
+      final hand = result.firstHand!;
+
+      // Usar TFLite directamente (sin API)
+      if (hand.gesture != null) {
+        setState(() {
+          _detectedSign = hand.gesture!;
+          _confidence = hand.gestureConfidence ?? 0.0;
+        });
+      }
+
+      // Enviar a API en paralelo si está disponible
+      if (!_isProcessingApi) {
+        _sendToApi(hand);
+      }
     }
   }
 
@@ -268,7 +282,7 @@ class _Pantalla4State extends State<Pantalla4> {
                   const SizedBox(height: 16),
 
                   // Resultado principal - solo visible cuando hay mano
-                  if (_handsDetected > 0 && _detectedSign != "Esperando...")
+                  if (_handsDetected > 0.7 && _detectedSign != "Esperando...")
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(

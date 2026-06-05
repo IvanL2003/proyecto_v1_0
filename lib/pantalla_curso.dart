@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'models/hand_detection_result.dart';
 import 'services/hand_detection_service.dart';
-import 'services/sign_language_api_service.dart';
 import 'widgets/native_camera_preview.dart';
 
 class PantallaCurso extends StatefulWidget {
@@ -14,23 +13,19 @@ class PantallaCurso extends StatefulWidget {
 
 class _PantallaCursoState extends State<PantallaCurso> {
   final HandDetectionService _detectionService = HandDetectionService();
-  final SignLanguageApiService _apiService = SignLanguageApiService(
-    baseUrl: 'https://subcruciform-treacherously-sam.ngrok-free.dev', // ngrok tunnel publico
-  );
 
   StreamSubscription<HandDetectionResult>? _landmarkSubscription;
   bool _cameraReady = false;
   int _handsDetected = 0;
-  bool _isSendingToApi = false;
 
-  // Variables del juego
-  final List<String> _palabras = [
-    'Hola', 'Gracias', 'Por favor', 'Adios', 'Si', 'No',
-    'Tiempo', 'Persona', 'Rojo', 'Azul', 'Verde', 'Amarillo'
-  ];
+  // Umbral mínimo de confianza para dar un gesto por válido (70 %)
+  static const double _confianzaMinima = 0.70;
+
+  // Solo letras que el modelo TFLite local puede clasificar (abecedario inglés)
+  final List<String> _palabras = ['A', 'E', 'I', 'O', 'U'];
 
   int _palabraActualIndex = 0;
-  int _vidas = 5;
+  int _vidas = 2;
   int _intentos = 3;
   int _tiempoRestante = 10;
   int _puntuacion = 0;
@@ -78,41 +73,25 @@ class _PantallaCursoState extends State<PantallaCurso> {
       _handsDetected = result.hands.length;
     });
 
-    // Solo enviar a la API si el juego esta en marcha y hay mano detectada
-    if (_juegoIniciado && !_esperandoRespuesta && result.hasHands && !_isSendingToApi) {
-      _enviarAApi(result.firstHand!);
+    // Validar usando el resultado TFLite local — sin API externa
+    if (!_juegoIniciado || _esperandoRespuesta || !result.hasHands) return;
+
+    final hand = result.firstHand!;
+    final gesture = hand.gesture?.toUpperCase();
+    final confidence = hand.gestureConfidence ?? 0.0;
+
+    if (gesture != null &&
+        gesture == _palabraActual.toUpperCase() &&
+        confidence >= _confianzaMinima) {
+      _verificarRespuesta(true);
     }
-  }
-
-  Future<void> _enviarAApi(HandData handData) async {
-    if (_isSendingToApi) return;
-    _isSendingToApi = true;
-
-    try {
-      final response = await _apiService.sendLandmarks(
-        handData: handData,
-        palabraObjetivo: _palabraActual,
-      );
-
-      if (mounted && response != null && _juegoIniciado && !_esperandoRespuesta) {
-        if (response['correcto'] == true) {
-          _verificarRespuesta(true);
-        }
-      }
-    } catch (e) {
-      // No bloquear el juego si la API falla
-    }
-
-    // Throttle: esperar antes del siguiente envio
-    await Future.delayed(const Duration(seconds: 1));
-    _isSendingToApi = false;
   }
 
   void _iniciarJuego() {
     setState(() {
       _juegoIniciado = true;
       _juegoTerminado = false;
-      _vidas = 5;
+      _vidas = 2;
       _puntuacion = 0;
       _palabraActualIndex = 0;
       _intentos = 3;
@@ -123,7 +102,7 @@ class _PantallaCursoState extends State<PantallaCurso> {
 
   void _iniciarTemporizador() {
     setState(() {
-      _tiempoRestante = 10;
+      _tiempoRestante = 5;
       _esperandoRespuesta = false;
     });
 
@@ -231,7 +210,6 @@ class _PantallaCursoState extends State<PantallaCurso> {
     _timer?.cancel();
     _landmarkSubscription?.cancel();
     _detectionService.stopDetection();
-    _apiService.dispose();
     super.dispose();
   }
 
@@ -629,23 +607,48 @@ class _PantallaCursoState extends State<PantallaCurso> {
           ),
         ),
         const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: _iniciarJuego,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0f3460),
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _iniciarJuego,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0f3460),
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Text(
+                'Repetir',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
             ),
-          ),
-          child: const Text(
-            'Jugar de Nuevo',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
+            const SizedBox(width: 16),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF16213e),
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  side: BorderSide(color: Colors.blue.withOpacity(0.4)),
+                ),
+              ),
+              child: const Text(
+                'Salir',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ],
     );

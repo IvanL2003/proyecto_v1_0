@@ -1,34 +1,24 @@
-// =============================================================================
-// Pantalla de Login — estilo visual de proyecto_v1_0
-// =============================================================================
-//
-// Autenticación real con Firebase Auth (email + contraseña).
-// Comparte el mismo proyecto Firebase que la app SIMBA (simba-cd72c),
-// por lo que los usuarios y sus datos (IP del servidor) son compartidos.
-//
-// Al autenticarse correctamente navega a Principal y limpia la pila de rutas.
-// =============================================================================
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'principal.dart';
-import 'register_screen.dart';
 import 'services/auth_service.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
   final _authService = AuthService();
 
   bool _obscurePassword = true;
+  bool _obscureConfirm = true;
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -36,16 +26,17 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmController.dispose();
     super.dispose();
   }
 
-  Future<void> _login() async {
+  Future<void> _register() async {
     setState(() => _errorMessage = null);
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
     try {
-      await _authService.login(
+      await _authService.register(
         email: _emailController.text,
         password: _passwordController.text,
       );
@@ -102,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Inicia sesión para continuar',
+                  'Crear cuenta nueva',
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.white.withOpacity(0.5),
@@ -169,7 +160,42 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           validator: (v) {
                             if (v == null || v.isEmpty) {
-                              return 'Introduce tu contraseña';
+                              return 'Introduce una contraseña';
+                            }
+                            if (v.length < 6) return 'Mínimo 6 caracteres';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        // ── Confirmar contraseña ─────────────────────
+                        TextFormField(
+                          controller: _confirmController,
+                          obscureText: _obscureConfirm,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: _inputDecoration(
+                            label: 'Confirmar contraseña',
+                            icon: Icons.lock_outline,
+                          ).copyWith(
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirm
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.white54,
+                                size: 20,
+                              ),
+                              onPressed: () => setState(
+                                () => _obscureConfirm = !_obscureConfirm,
+                              ),
+                            ),
+                          ),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return 'Confirma tu contraseña';
+                            }
+                            if (v != _passwordController.text) {
+                              return 'Las contraseñas no coinciden';
                             }
                             return null;
                           },
@@ -213,11 +239,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                         const SizedBox(height: 24),
 
-                        // ── Botón Iniciar sesión ─────────────────────
+                        // ── Botón Crear cuenta ───────────────────────
                         SizedBox(
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: _isLoading ? null : _login,
+                            onPressed: _isLoading ? null : _register,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
@@ -238,7 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    'Iniciar sesión',
+                                    'Crear cuenta',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
@@ -252,26 +278,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // ── Enlace a registro ─────────────────────────────────
+                // ── Enlace a login ────────────────────────────────────
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '¿No tienes cuenta? ',
+                      '¿Ya tienes cuenta? ',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.white.withOpacity(0.45),
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
-                        ),
-                      ),
+                      onTap: () => Navigator.pop(context),
                       child: const Text(
-                        'Regístrate',
+                        'Inicia sesión',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.blue,

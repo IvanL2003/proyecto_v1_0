@@ -31,15 +31,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
-    setState(() => _errorMessage = null);
-    if (!_formKey.currentState!.validate()) return;
+    setState(() {
+      _errorMessage = null;
+      _isLoading = true;
+    });
+    if (!_formKey.currentState!.validate()) {
+      setState(() => _isLoading = false);
+      return;
+    }
 
-    setState(() => _isLoading = true);
     try {
       await _authService.register(
         email: _emailController.text,
         password: _passwordController.text,
       );
+      // Registro OK: ir a Principal limpiando toda la pila
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const Principal()),
@@ -47,9 +53,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
       }
     } on FirebaseAuthException catch (e) {
-      if (mounted) setState(() => _errorMessage = AuthService.translateError(e));
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _errorMessage = AuthService.translateError(e);
+          _isLoading = false;
+        });
+      }
     }
   }
 

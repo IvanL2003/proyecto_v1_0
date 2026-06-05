@@ -47,9 +47,11 @@ class _PrincipalState extends State<Principal> {
     // // 'Idea', 'Niña', 'Hijo', 'Nombre', 'Realidad',
     // 'Rojo', 'Azul', 'Verde', 'Amarillo', 'Negro',
     // 'Blanco', 'Gris', 'Naranja', 'Marron', 'Rosa',
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+    // Solo letras con imagen disponible en assets/images/
+    'a', 'b', 'c', 'd',
+    'e', 'f', 'g', 'i',
     'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
-    't', 'u', 'v', 'w', 'x', 'y', 'z',
+    't', 'u',
   ];
 
   final List<Article> _articles = [
